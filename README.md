@@ -1,2 +1,6 @@
-# TxRx Library to help send and receive JSON to and from p5js sketches
+# TxRx Library
 
+## Helps transfer JSON to/from p5js sketches using:
+- Serial
+- WiFi
+- BLE
