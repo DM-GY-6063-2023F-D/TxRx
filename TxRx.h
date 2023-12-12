@@ -5,14 +5,10 @@
 class TxRx {
 
 private:
-  static const int MAX_ANALOG{ 16 };
-  static const int MAX_DIGITAL{ 16 };
-
-private:
   int analogCount = 0;
   int digitalCount = 0;
-  int analogPins[TxRx::MAX_ANALOG];
-  int digitalPins[TxRx::MAX_DIGITAL];
+  int analogPins[NUM_ANALOG_INPUTS];
+  int digitalPins[NUM_DIGITAL_PINS];
   String jsonTextTx;
 
 protected:
@@ -26,23 +22,21 @@ public:
   virtual void txRx() = 0;
 
   void startSerial(int baudRate) {
-    if (!Serial) {
-      Serial.begin(baudRate);
-    }
+    Serial.begin(baudRate);
     while (!Serial) {}
   }
 
   void registerAnalog(int pin) {
-    // TODO: dynamic array
-    if (analogCount >= TxRx::MAX_ANALOG) return;
+    if (analogCount >= NUM_ANALOG_INPUTS) return;
+    if (pin == RX || pin == TX) return;
 
     analogPins[analogCount] = pin;
     analogCount++;
   }
 
   void registerDigital(int pin) {
-    // TODO: dynamic array
-    if (digitalCount >= TxRx::MAX_DIGITAL) return;
+    if (digitalCount >= NUM_DIGITAL_PINS) return;
+    if (pin == RX || pin == TX) return;
 
     pinMode(pin, INPUT);
     digitalPins[digitalCount] = pin;
@@ -56,8 +50,7 @@ public:
 
 protected:
   const String& getJsonTextTx() {
-    // TODO: dynamic size of JSON based on counts
-    StaticJsonDocument<128> mJson;
+    StaticJsonDocument<960> mJson;
     JsonObject data = mJson.createNestedObject("data");
 
     for (int di = 0; di < digitalCount; di++) {
@@ -67,7 +60,7 @@ protected:
 
     for (int ai = 0; ai < analogCount; ai++) {
       int pin = analogPins[ai];
-      data[String("A") + String(pin - A0)] = analogRead(pin);
+      data[String("A") + String(pin)] = analogRead(pin);
     }
 
     jsonTextTx = "";
