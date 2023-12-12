@@ -2,6 +2,10 @@
 
 class SerialTxRx : public TxRx {
 
+private:
+  bool hasConnected{false};
+  long lastConnected{0};
+
 public:
   SerialTxRx() {}
 
@@ -10,7 +14,14 @@ public:
   }
 
   void txRx() {
+    if(!hasConnected && millis() - lastConnected > 500) {
+      Serial.println("A");
+      Serial.flush();
+      lastConnected = millis();
+    }
+
     if (Serial.available() > 0) {
+      hasConnected = true;
       int byteIn = Serial.read();
       if (byteIn == 'G') {
         Serial.flush();
