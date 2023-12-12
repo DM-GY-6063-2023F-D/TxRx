@@ -3,32 +3,27 @@
 
 #include "TxRx.h"
 
-class WiFiTxRx : TxRx {
+class WiFiTxRx : public TxRx {
 
 private:
-  String jsonTextRx;
-  bool hasJsonTextRx;
-
-private:
-  int baudRate;
   WebServer mServer;
+  String jsonTextRx;
+
+  String ssid;
+  String password;
 
 public:
-  // TODO: test this or init
-  WiFiTxRx(int _baudRate, String _ssid, String _password)
-    : mServer(80) {
-    init(_baudRate, _ssid, _password);
-  }
+  WiFiTxRx(String ssid, String password)
+    : mServer(80),
+      ssid(ssid),
+      password(password) {}
 
-  void init(int _baudRate, String _ssid, String _password) {
-    baudRate = _baudRate;
-    Serial.begin(baudRate);
-    while (!Serial) {}
+  void init(int baudRate) {
+    startSerial(baudRate);
 
-    // WiFi setup
     WiFi.disconnect(true);
     WiFi.mode(WIFI_STA);
-    WiFi.begin(_ssid, _password);
+    WiFi.begin(ssid, password);
 
     int tryConnectCount = 0;
     while (WiFi.status() != WL_CONNECTED && tryConnectCount < 60) {
@@ -46,18 +41,25 @@ public:
     }
 
     mServer.enableCORS();
-    // TODO: tesst this !!!!
+
     // inspired by: https://stackoverflow.com/a/29286957
     mServer.on("/data", HTTP_GET, [&]() {
       handleData();
     });
-    mServer.on("/post", HTTP_POST, [&]() {
+
+    mServer.on("/data", HTTP_POST, [&]() {
       handlePost();
     });
+
     mServer.onNotFound([&]() {
       handleNotFound();
     });
+
     mServer.begin();
+  }
+
+  void txRx() {
+    mServer.handleClient();
   }
 
 private:
@@ -69,12 +71,12 @@ private:
   // WebServer "documentation":
   // https://github.com/espressif/arduino-esp32/blob/master/libraries/WebServer/src/WebServer.h
   void handlePost() {
-    if (hasJsonTextRx) {
-      // TODO: Arduino not processing POST fast enough
+    jsonTextRx = String(mServer.arg(0));
+
+    if (onReceiveFn) {
+      onReceiveFn(jsonTextRx);
     }
 
-    jsonTextRx = String(mServer.arg(0));
-    hasJsonTextRx = true;
     mServer.send(200, "text/plain", "POSTed");
   }
 
@@ -85,22 +87,6 @@ private:
       mServer.send(200);
     } else {
       mServer.send(404, "text/plain", "404! ADDRESS NOT FOUND");
-    }
-  }
-
-public:
-  void send() {
-    mServer.handleClient();
-  }
-
-  void receive(std::function< void(String) >&& fn) {
-    mServer.handleClient();
-
-    if (hasJsonTextRx) {
-      hasJsonTextRx = false;
-      fn(jsonTextRx);
-    } else {
-      fn(String(""));
     }
   }
 };
