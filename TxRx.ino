@@ -4,20 +4,12 @@
 
 SerialTxRx mSerialTxRx(9600);
 WiFiTxRx mWiFiTxRx(9600, String("id"), String("password"));
-BLETxRx mBLETxRx(9600,
-                 String("TxRx"),
-                 String("250b0d00-1b4f-4f16-9171-f63c733d15ab"),
-                 String("250b0d01-1b4f-4f16-9171-f63c733d15ab"),
-                 String("250b0d02-1b4f-4f16-9171-f63c733d15ab"));
+BLETxRx mBLETxRx(9600, String("TxRx"));
 
 void setup() {
   mSerialTxRx.init(9600);
   mWiFiTxRx.init(9600, String("id"), String("password"));
-  mBLETxRx.init(9600,
-                String("TxRx"),
-                String("250b0d00-1b4f-4f16-9171-f63c733d15ab"),
-                String("250b0d01-1b4f-4f16-9171-f63c733d15ab"),
-                String("250b0d02-1b4f-4f16-9171-f63c733d15ab"));
+  mBLETxRx.init(9600, String("TxRx"));
 }
 
 void loop() {

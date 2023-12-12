@@ -5,40 +5,43 @@
 class BLETxRx : TxRx {
 
 private:
-  String receivedJsonText;
-  bool hasReceivedJsonText;
+  static String randomUUID;
+  static String serviceUUID;
+  static String txUUID;
+  static String rxUUID;
 
 private:
   int baudRate;
   BLEService mService;
-  BLECharacteristic sendCharacteristic;
-  BLECharacteristic receiveCharacteristic;
+  BLECharacteristic txCharacteristic;
+  BLECharacteristic rxCharacteristic;
 
 public:
   // TODO: test this or init
-  BLETxRx(int _baudRate, String _deviceName, String _serviceUUID, String _sendUUID, String _receiveUUID)
-    : mService(_serviceUUID.c_str()), sendCharacteristic(_sendUUID.c_str(), BLERead, 128), receiveCharacteristic(_receiveUUID.c_str(), BLEWrite, 128) {
-    init(_baudRate, _deviceName, _serviceUUID, _sendUUID, _receiveUUID);
+  BLETxRx(int _baudRate, String _deviceName)
+    : mService(serviceUUID.c_str()), txCharacteristic(txUUID.c_str(), BLERead, 128), rxCharacteristic(rxUUID.c_str(), BLEWrite, 128) {
+    init(_baudRate, _deviceName);
   }
 
-  void init(int _baudRate, String _deviceName, String _serviceUUID, String _sendUUID, String _receiveUUID) {
+  void init(int _baudRate, String _deviceName) {
     baudRate = _baudRate;
     Serial.begin(baudRate);
     while (!Serial) {}
 
     BLE.begin();
+    BLE.setDeviceName(_deviceName.c_str());
     BLE.setLocalName(_deviceName.c_str());
     BLE.setAdvertisedService(mService);
-    mService.addCharacteristic(sendCharacteristic);
-    mService.addCharacteristic(receiveCharacteristic);
+    mService.addCharacteristic(txCharacteristic);
+    mService.addCharacteristic(rxCharacteristic);
     BLE.addService(mService);
     BLE.advertise();
   }
 
   void send() {
     BLE.central();
-    String& json = prepareJson();
-    sendCharacteristic.writeValue(json.c_str(), json.length());
+    String jsonTextTx = getJsonTextTx();
+    txCharacteristic.writeValue(jsonTextTx.c_str(), jsonTextTx.length());
   }
 
   // https://github.com/arduino-libraries/ArduinoBLE/blob/master/examples/Peripheral/LED/LED.ino
@@ -48,11 +51,27 @@ public:
 
     // TODO: test if need a while(connected)
     if (central && central.connected()) {
-      if (receiveCharacteristic.written()) {
-        // TODO: value is a pointer. need to use receiveCharacteristic.valueLength()
-        String receivedJsonText = String(receiveCharacteristic.value(), receiveCharacteristic.valueLength());
-        fn(receivedJsonText);
+      if (rxCharacteristic.written()) {
+        String jsonTextRx = String(rxCharacteristic.value(), rxCharacteristic.valueLength());
+        fn(jsonTextRx);
       }
     }
   }
 };
+
+// TODO: test random UUID
+String BLETxRx::randomUUID = String(random(1000, 9999));
+String BLETxRx::serviceUUID = String("250b0d00-1b4f-4f16-9171-f63c733d" + randomUUID);
+String BLETxRx::txUUID = String("250b0d01-1b4f-4f16-9171-f63c733d" + randomUUID);
+String BLETxRx::rxUUID = String("250b0d02-1b4f-4f16-9171-f63c733d" + randomUUID);
+
+// TODO: test p5js connect by service name
+// https://developer.mozilla.org/en-US/docs/Web/API/Bluetooth/requestDevice
+// let options = {
+//   filters: [
+//     { services: [0x1802] },
+//     { name: "TxRx" },
+//     { namePrefix: "TxRx" },
+//   ],
+// };
+// mBLE.connect(options, gotCharacteristics);

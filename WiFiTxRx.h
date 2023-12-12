@@ -6,8 +6,8 @@
 class WiFiTxRx : TxRx {
 
 private:
-  String receivedJsonText;
-  bool hasReceivedJsonText;
+  String jsonTextRx;
+  bool hasJsonTextRx;
 
 private:
   int baudRate;
@@ -62,19 +62,19 @@ public:
 
 private:
   void handleData() {
-    String& json = prepareJson();
-    mServer.send(200, "application/json", json);
+    String jsonTextTx = getJsonTextTx();
+    mServer.send(200, "application/json", jsonTextTx);
   }
 
   // WebServer "documentation":
   // https://github.com/espressif/arduino-esp32/blob/master/libraries/WebServer/src/WebServer.h
   void handlePost() {
-    if (hasReceivedJsonText) {
+    if (hasJsonTextRx) {
       // TODO: Arduino not processing POST fast enough
     }
 
-    receivedJsonText = String(mServer.arg(0));
-    hasReceivedJsonText = true;
+    jsonTextRx = String(mServer.arg(0));
+    hasJsonTextRx = true;
     mServer.send(200, "text/plain", "POSTed");
   }
 
@@ -96,9 +96,9 @@ public:
   void receive(std::function< void(String) >&& fn) {
     mServer.handleClient();
 
-    if (hasReceivedJsonText) {
-      hasReceivedJsonText = false;
-      fn(receivedJsonText);
+    if (hasJsonTextRx) {
+      hasJsonTextRx = false;
+      fn(jsonTextRx);
     } else {
       fn(String(""));
     }

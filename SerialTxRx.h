@@ -23,8 +23,8 @@ public:
       if (byteIn == 'G') {
         Serial.read();
         Serial.flush();
-        String& json = prepareJson();
-        Serial.println(json);
+        String jsonTextTx = getJsonTextTx();
+        Serial.println(jsonTextTx);
       }
     }
   }
@@ -34,8 +34,8 @@ public:
       int byteIn = Serial.peek();
       if (byteIn == 'P') {
         Serial.read();
-        String receivedJsonText = Serial.readStringUntil('\n');
-        fn(receivedJsonText);
+        String jsonTextRx = Serial.readStringUntil('\n');
+        fn(jsonTextRx);
       }
     }
   }

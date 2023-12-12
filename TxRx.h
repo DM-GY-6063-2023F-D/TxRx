@@ -2,27 +2,29 @@
 
 #include <ArduinoJson.h>
 
-// TODO: static ??
-const int MAX_ANALOG = 16;
-const int MAX_DIGITAL = 16;
-
 class TxRx {
+
+private:
+  static const int MAX_ANALOG{ 16 };
+  static const int MAX_DIGITAL{ 16 };
 
 private:
   int analogCount = 0;
   int digitalCount = 0;
-  int analogPins[MAX_ANALOG];
-  int digitalPins[MAX_DIGITAL];
-  String jsonText;
+  int analogPins[TxRx::MAX_ANALOG];
+  int digitalPins[TxRx::MAX_DIGITAL];
+  String jsonTextTx;
+
+protected:
+  TxRx() {}
 
 public:
-  TxRx() {}
   virtual void send() = 0;
   virtual void receive(std::function< void(String) >&& fn) = 0;
 
   void registerAnalog(int pin) {
     // TODO: dynamic array ?
-    if (analogCount >= MAX_ANALOG) return;
+    if (analogCount >= TxRx::MAX_ANALOG) return;
 
     analogPins[analogCount] = pin;
     analogCount++;
@@ -30,14 +32,14 @@ public:
 
   void registerDigital(int pin) {
     // TODO: dynamic array ?
-    if (digitalCount >= MAX_DIGITAL) return;
+    if (digitalCount >= TxRx::MAX_DIGITAL) return;
 
     digitalPins[digitalCount] = pin;
     digitalCount++;
   }
 
 protected:
-  String& prepareJson() {
+  const String& getJsonTextTx() {
     // TODO: dynamic size of JSON
     StaticJsonDocument<128> mJson;
     JsonObject data = mJson.createNestedObject("data");
@@ -52,8 +54,8 @@ protected:
       data[String(pin)] = analogRead(pin);
     }
 
-    serializeJson(mJson, jsonText);
+    serializeJson(mJson, jsonTextTx);
 
-    return jsonText;
+    return jsonTextTx;
   }
 };
