@@ -1,10 +1,25 @@
 ## TxRx Library
 
-### Helps transfer JSON data between arduino and p5js sketches using different interfaces
+### Helps transfer JSON data between esp32 arduino and p5js sketches using different interfaces.
 
 ---
 
-## Arduino
+## Dependencies:
+
+### Arduino
+
+- [ArduinoJson](https://arduinojson.org/)
+- [arduino-esp32](https://github.com/espressif/arduino-esp32/)
+- [ArduinoBLE](https://www.arduino.cc/reference/en/libraries/arduinoble/)
+
+### P5js
+
+- [p5.webserial](https://github.com/gohai/p5.webserial)
+- [p5.ble](https://itpnyu.github.io/p5ble-website/)
+
+## Use:
+
+### Arduino
 
 Include the header file for the interface you would like to use and instantiate a corresponding object:
 
@@ -51,7 +66,7 @@ In `loop()`: call `txRx()` to update/process any sends/receives:
 mTxRx.txRx();
 ```
 
-## P5js
+### P5js
 
 Include the library file in `index.html`:
 
