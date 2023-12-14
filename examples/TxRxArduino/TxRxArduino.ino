@@ -1,12 +1,11 @@
 //
 // Pick one type of protocol/interface by uncommenting the corresponding lines below
-//
-
-// #include <WiFiTxRx.h>
-// WiFiTxRx mTxRx(String("MySSID"), String("MyPassword"));
 
 // #include <SerialTxRx.h>
 // SerialTxRx mTxRx;
+
+// #include <WiFiTxRx.h>
+// WiFiTxRx mTxRx(String("tgh8114"), String("abcd1234"));
 
 // #include <BLETxRx.h>
 // BLETxRx mTxRx(String("e416af28-c3e9-43c2-a538-b2e27d9dcfb4"));

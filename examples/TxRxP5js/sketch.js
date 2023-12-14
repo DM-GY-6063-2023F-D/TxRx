@@ -1,10 +1,13 @@
+//
+// Pick one type of protocol/interface by uncommenting the corresponding lines below
+
 let mTxRx;
 let connectButton;
 
 function initTxRx() {
   // mTxRx = new SerialTxRx(9600);
   // mTxRx = new WiFiTxRx("http://192.168.1.100");
-  mTxRx = new BLETxRx("e416af28-c3e9-43c2-a538-b2e27d9dcfb4");
+  // mTxRx = new BLETxRx("bead0000-dead-beef-feed-abacadaba000");
   mTxRx.registerOnReceive((d) => print(d));
   connectButton.hide();
 }

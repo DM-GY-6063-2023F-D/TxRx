@@ -77,7 +77,7 @@ class WiFiTxRx {
     this.requestData = true;
   }
 
-  handleResponse(res) {
+  handleResponse = (res) => {
     let data = res.data;
     if (this.onReceiveFn) {
       this.onReceiveFn(data);
