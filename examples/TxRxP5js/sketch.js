@@ -1,6 +1,5 @@
-let connectButton;
-
 let mTxRx;
+let connectButton;
 
 function initTxRx() {
   // mTxRx = new SerialTxRx(9600);
