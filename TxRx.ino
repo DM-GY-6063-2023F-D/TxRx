@@ -1,17 +1,35 @@
-#include "SerialTxRx.h"
-#include "WiFiTxRx.h"
-#include "BLETxRx.h"
+// #include "WiFiTxRx.h"
+// WiFiTxRx mTxRx(String("MySSID"), String("MyPassword"));
 
-SerialTxRx mSerialTxRx(9600);
-WiFiTxRx mWiFiTxRx(9600, String("id"), String("password"));
-BLETxRx mBLETxRx(9600, String("TxRx"));
+// #include "SerialTxRx.h"
+// SerialTxRx mTxRx;
+
+// #include "BLETxRx.h"
+// BLETxRx mTxRx(String("e416af28-c3e9-43c2-a538-b2e27d9dcfb4"));
 
 void setup() {
-  mSerialTxRx.init(9600);
-  mWiFiTxRx.init(9600, String("id"), String("password"));
-  mBLETxRx.init(9600, String("TxRx"));
+  mTxRx.init(9600);
+
+  mTxRx.registerDigital(0);
+  mTxRx.registerDigital(1);
+  mTxRx.registerDigital(2);
+  mTxRx.registerDigital(3);
+  mTxRx.registerDigital(4);
+  mTxRx.registerDigital(5);
+
+  mTxRx.registerAnalog(A0);
+  mTxRx.registerAnalog(A3);
+  mTxRx.registerAnalog(A4);
+  mTxRx.registerAnalog(A5);
+  mTxRx.registerAnalog(A6);
+  mTxRx.registerAnalog(A7);
+
+  mTxRx.registerOnReceive([](String s) {
+    Serial.println(s);
+  });
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  mTxRx.txRx();
+  delay(2);
 }

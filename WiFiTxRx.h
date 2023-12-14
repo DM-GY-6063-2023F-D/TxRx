@@ -31,13 +31,12 @@ public:
       Serial.print(".");
       tryConnectCount++;
     }
-    Serial.println("");
 
     if (WiFi.status() == WL_CONNECTED) {
-      Serial.println("IP address: ");
+      Serial.println("\nIP address: ");
       Serial.println(WiFi.localIP());
     } else {
-      Serial.println("WiFi is NOT connected! 💩");
+      Serial.println("\nWiFi is NOT connected! 💩");
     }
 
     mServer.enableCORS();
